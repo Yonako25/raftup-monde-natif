@@ -59,6 +59,8 @@ Un champ inconnu est une erreur (on repère ainsi les fautes de frappe).
 | `choices` | liste de textes | Valeurs d'un `choice` ; la n-ième vaut `n - 1`. |
 | `aliases` | table texte → texte | Autres noms acceptés dans le YAML (`kitty = "cat"`). |
 
+Un nom d'option ne contient que des lettres ASCII, des chiffres et `_`, et ne reprend pas une option commune à tous les jeux (`progression_balancing`, `accessibility`, `local_items`, `non_local_items`, `start_inventory`, `start_inventory_from_pool`, `start_hints`, `start_location_hints`, `exclude_locations`, `priority_locations`, `item_links`, `plando_items`, `plando_connections`, `plando_texts`).
+
 Valeur d'une option, dans les règles et le `slot_data` : `toggle` → 0 ou 1, `range` → le nombre, `choice` → la position (0, 1, …). Le YAML d'un joueur accepte une valeur, des poids (`{true: 30, false: 70}`) ou `random`, comme Archipelago.
 
 ### `[[items]]`
