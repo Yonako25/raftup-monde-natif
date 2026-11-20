@@ -1,4 +1,4 @@
-# Format de monde natif — version 1
+# Format de monde natif — versions 1 et 2
 
 Un **monde natif** décrit un jeu pour un randomizer multiworld compatible avec Archipelago : ses objets, ses lieux, ses régions, ses règles et ses options, dans un fichier TOML, **sans code**. Raftup le lit, le vérifie et le compile vers son moteur de génération.
 
@@ -20,7 +20,7 @@ Décision et raisons : ADR 0041 du dépôt Raftup.
 ## Structure du fichier
 
 ```toml
-format_version = 1          # obligatoire
+format_version = 1          # obligatoire : 1 ou 2 (voir « Versions »)
 
 [game]                      # obligatoire
 [[options]]                 # options du joueur (YAML)
@@ -105,7 +105,9 @@ Une entrée présente qui touche une région absente est une erreur : écrire le
 
 ### `[[events]]`
 
-Un événement est un lieu **sans numéro** où un **objet d'événement** (sans numéro, de progression) est posé d'office : « bouton pressé », « boss vaincu ». Champs : `name`, `region`, `rule`, `when`, et `item` (nom d'un nouvel objet d'événement, unique parmi tous les objets).
+Un événement est un lieu **sans numéro** où un **objet d'événement** (sans numéro, de progression) est posé d'office : « bouton pressé », « boss vaincu ». Champs : `name`, `region`, `rule`, `when`, et `item` (nom d'un nouvel objet d'événement, distinct des `[[items]]`).
+
+En version 1, chaque événement a son propre objet. En **version 2**, plusieurs événements peuvent donner le **même** objet d'événement : il est créé une fois, chaque événement en pose un exemplaire, et une règle le compte (`has("Pink Plort", 3)`). C'est ce que font beaucoup d'apworlds.
 
 ### `[[pool]]`, `[filler]`, `[[start]]`
 
@@ -193,6 +195,22 @@ Les positions sont exactes dans une chaîne littérale TOML (`'…'`), recommand
 
 Fichier de 4 Mio au plus ; 100 000 éléments par liste ; règle de 16 Kio ; 64 niveaux d'imbrication ; noms de 200 caractères.
 
-## Ce que la version 1 ne sait pas encore faire
+## Versions
+
+| Version | Changement |
+| --- | --- |
+| 1 | Première version. |
+| 2 | Plusieurs `[[events]]` peuvent donner le même objet d'événement. |
+
+Un lecteur de la version 2 lit aussi la version 1. Écrire `format_version = 1` quand on n'a pas besoin de la 2 : le fichier reste lisible par plus d'outils.
+
+## Ce que le format ne sait pas encore faire
 
 Règles d'objet (quels objets un lieu accepte, `local_items`), objets à placer tôt, `accessibility`, entrées mélangées, remplissages pondérés, noms spéciaux des options numériques. Ils arriveront avec une `format_version` plus haute.
+
+## Conversion depuis et vers un apworld
+
+Raftup sait convertir un apworld en monde natif, et l'inverse (ADR 0042 du dépôt Raftup, outil `raftup-monde`) :
+
+- `raftup-monde importer export.json --seed AP_xxx.zip` écrit un `world.toml` à partir de l'export d'une génération. Il décrit le monde **pour les options de cette génération** ; les options de l'apworld sont recopiées en commentaire, et la liste « À vérifier » en tête du fichier dit ce que l'outil a dû supposer.
+- `raftup-monde apworld world.toml` écrit un `.apworld` pour Archipelago : même datapackage, règles en fonctions Python. Tout monde natif peut ainsi tourner dans Archipelago.
