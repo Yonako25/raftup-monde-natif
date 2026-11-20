@@ -1,0 +1,44 @@
+# Le plus petit monde natif valide : deux régions, deux lieux, une clé.
+format_version = 1
+
+[game]
+name = "Minimal"
+goal = "can_reach(Treasure)"
+
+[[items]]
+name = "Key"
+id = 1
+classification = "progression"
+
+[[items]]
+name = "Coin"
+id = 2
+classification = "filler"
+
+[[regions]]
+name = "Start"
+
+[[regions]]
+name = "Vault"
+
+[[entrances]]
+name = "Start to Vault"
+from = "Start"
+to = "Vault"
+rule = "has(Key)"
+
+[[locations]]
+name = "Chest"
+id = 1
+region = "Start"
+
+[[locations]]
+name = "Treasure"
+id = 2
+region = "Vault"
+
+[[pool]]
+item = "Key"
+
+[filler]
+item = "Coin"

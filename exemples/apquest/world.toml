@@ -1,0 +1,261 @@
+# APQuest au format de monde natif (format_version 1).
+#
+# Réécriture du monde APQuest d'Archipelago 0.6.8 (`worlds/apquest`, licence MIT,
+# copyright des auteurs d'Archipelago). Noms, numéros, règles, options et slot_data sont
+# ceux de l'original : le client APQuest doit pouvoir jouer la seed sans modification.
+#
+# L'ordre des listes compte : c'est l'ordre de création des éléments, donc celui du
+# placement. Il suit le portage Rust (`crates/generate/src/worlds/apquest.rs`).
+
+format_version = 1
+
+[game]
+name = "APQuest"
+start_region = "Overworld"
+goal = "has(Victory)"
+
+# ---- Options (ordre du spoiler) ----
+
+[[options]]
+name = "hard_mode"
+type = "toggle"
+default = false
+
+[[options]]
+name = "hammer"
+type = "toggle"
+default = false
+
+[[options]]
+name = "extra_starting_chest"
+type = "toggle"
+default = false
+
+[[options]]
+name = "trap_chance"
+type = "range"
+min = 0
+max = 100
+default = 0
+
+[[options]]
+name = "start_with_one_confetti_cannon"
+type = "toggle"
+default = false
+
+[[options]]
+name = "confetti_explosiveness"
+type = "range"
+min = 0
+max = 10
+default = 3
+
+[[options]]
+name = "player_sprite"
+type = "choice"
+choices = ["human", "duck", "horse", "cat"]
+aliases = { kitty = "cat" }
+default = "human"
+
+# ---- Objets ----
+
+[[items]]
+name = "Key"
+id = 1
+classification = "progression"
+
+[[items]]
+name = "Sword"
+id = 2
+classification = "progression+useful"
+
+[[items]]
+name = "Shield"
+id = 3
+classification = "progression"
+
+[[items]]
+name = "Hammer"
+id = 4
+classification = "progression"
+
+# Les améliorations de vie ne débloquent quelque chose qu'en mode difficile.
+[[items]]
+name = "Health Upgrade"
+id = 5
+classification = [
+    { when = "option(hard_mode)", value = "progression" },
+    { value = "useful" },
+]
+
+[[items]]
+name = "Confetti Cannon"
+id = 6
+classification = "filler"
+
+[[items]]
+name = "Math Trap"
+id = 7
+classification = "trap"
+
+# ---- Régions ----
+
+[[regions]]
+name = "Overworld"
+
+[[regions]]
+name = "Top Left Room"
+
+[[regions]]
+name = "Bottom Right Room"
+
+[[regions]]
+name = "Right Room"
+
+[[regions]]
+name = "Final Boss Room"
+
+[[regions]]
+name = "Top Middle Room"
+when = "option(hammer)"
+
+# ---- Entrées (sorties d'une région vers une autre) ----
+
+[[entrances]]
+name = "Overworld to Bottom Right Room"
+from = "Overworld"
+to = "Bottom Right Room"
+rule = "has(Sword)"
+
+[[entrances]]
+name = "Overworld to Right Room"
+from = "Overworld"
+to = "Right Room"
+
+[[entrances]]
+name = "Right Room to Final Boss Room"
+from = "Right Room"
+to = "Final Boss Room"
+rule = 'has("Top Left Room Button Pressed")'
+
+[[entrances]]
+name = "Overworld to Top Left Room"
+from = "Overworld"
+to = "Top Left Room"
+rule = "has(Key)"
+
+[[entrances]]
+name = "Overworld to Top Middle Room"
+from = "Overworld"
+to = "Top Middle Room"
+rule = "has(Hammer)"
+when = "option(hammer)"
+
+# ---- Lieux ----
+
+[[locations]]
+name = "Bottom Left Chest"
+id = 3
+region = "Overworld"
+
+[[locations]]
+name = "Bottom Right Room Left Chest"
+id = 5
+region = "Bottom Right Room"
+
+[[locations]]
+name = "Bottom Right Room Right Chest"
+id = 6
+region = "Bottom Right Room"
+
+[[locations]]
+name = "Top Left Room Chest"
+id = 1
+region = "Top Left Room"
+
+[[locations]]
+name = "Right Room Enemy Drop"
+id = 10
+region = "Right Room"
+rule = 'has(Sword) and (not option(hard_mode) or has(Shield) or has("Health Upgrade"))'
+
+# Sans marteau, la salle du haut n'existe pas : le coffre est dans l'Overworld.
+[[locations]]
+name = "Top Middle Chest"
+id = 2
+region = [
+    { when = "option(hammer)", value = "Top Middle Room" },
+    { value = "Overworld" },
+]
+
+[[locations]]
+name = "Bottom Left Extra Chest"
+id = 4
+region = "Overworld"
+when = "option(extra_starting_chest)"
+
+# ---- Événements (lieu sans numéro + objet d'événement posé d'office) ----
+
+[[events]]
+name = "Top Left Room Button"
+region = "Top Left Room"
+item = "Top Left Room Button Pressed"
+
+[[events]]
+name = "Final Boss Defeated"
+region = "Final Boss Room"
+rule = 'has_all(Sword, Shield) and (not option(hard_mode) or has("Health Upgrade", 2))'
+item = "Victory"
+
+# ---- Pool : objets à placer, dans l'ordre ----
+
+[[pool]]
+item = "Key"
+
+[[pool]]
+item = "Sword"
+
+[[pool]]
+item = "Shield"
+
+[[pool]]
+item = "Health Upgrade"
+count = 2
+
+[[pool]]
+item = "Hammer"
+when = "option(hammer)"
+
+# Complète le pool jusqu'au nombre de lieux : un piège avec `trap_percent` % de chances.
+[filler]
+item = "Confetti Cannon"
+trap = "Math Trap"
+trap_percent = "option(trap_chance)"
+
+# ---- Inventaire de départ ----
+
+[[start]]
+item = "Confetti Cannon"
+when = "option(start_with_one_confetti_cannon)"
+
+# ---- slot_data envoyé au client ----
+
+[[slot_data]]
+key = "hard_mode"
+option = "hard_mode"
+
+[[slot_data]]
+key = "hammer"
+option = "hammer"
+
+[[slot_data]]
+key = "extra_starting_chest"
+option = "extra_starting_chest"
+
+[[slot_data]]
+key = "confetti_explosiveness"
+option = "confetti_explosiveness"
+
+[[slot_data]]
+key = "player_sprite"
+option = "player_sprite"
