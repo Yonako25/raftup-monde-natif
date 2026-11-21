@@ -2,13 +2,13 @@
 
 Un **monde natif** décrit un jeu pour un randomizer multiworld compatible avec Archipelago : ses objets, ses lieux, ses régions, ses règles et ses options, dans un fichier TOML, **sans code**. Raftup le lit, le vérifie et le compile vers son moteur de génération.
 
-Ce dossier est autonome : il pourra devenir son propre dépôt tel quel. Licence : MIT OR Apache-2.0.
+Dépôt autonome de la spécification, versionné par `format_version` et par des étiquettes `vN`. Licence : MIT OR Apache-2.0 (`LICENSE-MIT`, `LICENSE-APACHE`) ; notices des tiers dans `THIRD_PARTY_NOTICES.md`.
 
 - `README.md` : la spécification (ce fichier) ;
 - `exemples/apquest/world.toml` : APQuest, réécrit depuis Archipelago 0.6.8 (MIT) ;
 - `exemples/minimal/world.toml` : le plus petit monde valide.
 
-Décision et raisons : ADR 0041 du dépôt Raftup.
+Décision et raisons : ADR 0041 et 0042 du dépôt Raftup (https://github.com/Yonako25/raftup).
 
 ## Principes
 
